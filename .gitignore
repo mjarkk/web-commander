@@ -62,3 +62,4 @@ typings/
 
 # Added myself
 client/build/js/*
+server/database/db.json

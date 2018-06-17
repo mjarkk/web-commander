@@ -1,5 +1,7 @@
 const log = console.log
 
+const db = require('./database/db.js')
+
 class Client {
   constructor(app, conf) {
     this.app = app

@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/mjarkk/web-commander",
+  "bin": {
+    "wcommander": "./cli/index.js",
+    "Wcommander": "./cli/index.js"
+  },
   "scripts": {
     "start": "node run.js",
     "dev": "node run.js --dev",
@@ -27,9 +31,11 @@
     "fs-extra": "^6.0.1",
     "lowdb": "^1.0.0",
     "minimist": "^1.2.0",
+    "node-fetch": "^2.1.2",
     "style-loader": "^0.21.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
+    "unfetch": "^3.0.0",
     "vue": "^2.5.16",
     "vue-loader": "^15.2.4",
     "vue-template-compiler": "^2.5.16",

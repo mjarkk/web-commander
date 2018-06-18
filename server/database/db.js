@@ -17,6 +17,9 @@ class Database {
   appsList() {
 
   }
+  addApp() {
+    
+  }
 }
 
 module.exports = Database

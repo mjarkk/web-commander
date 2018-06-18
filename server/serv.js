@@ -15,6 +15,9 @@ class Client {
     app.get('/api/', (req, res) => {
       this.sendErr({res, why: 'want to find out how the api works?, go to the github repo: https://github.com/mjarkk/web-commander'})
     })
+    app.get('/status/', (req, res) => {
+      res.json({status: true})
+    })
   }
   sendErr(data) {
     if (typeof data == 'object' && data.res) {

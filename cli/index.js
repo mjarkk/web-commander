@@ -37,9 +37,19 @@ program
   .description('Add a service')
   .action((q,a) => {
     get.json('/status')
-    .then(d => {
-      
+    .then(d => d.status
+      ? inquirer.prompt({
+          type: 'input',
+          name: 'serviceName',
+          message: 'The new app name? (max 20chars)\n>',
+          validate: output => output.length < 20
+        })
+      : Error('')
+    )
+    .then(ouput => {
+      log(ouput.serviceName)
     })
+    .catch(err => log(err))
   })
 
 program.parse(process.argv)

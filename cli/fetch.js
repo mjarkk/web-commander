@@ -12,22 +12,38 @@ const config = {
 
 class FetchHandeler {
   constructor() {
-    this.json('/status')
-    .catch(err => {
-      log(colors.red.bold('web commander webserver not running!'))
-      log(colors.gray('exiting..'))
-      process.exit()
+    this.status = false
+  }
+  check() {
+    return new Promise((resolve, reject) => {
+      if (!this.status) {
+        fetch(this.genURI('/status'))
+        .then(data => {
+          resolve(true)
+        })
+        .catch(err => {
+          log(colors.red.bold('web commander webserver not running!'))
+          log(colors.red('type `yarn start` to start the webserver'))
+          log(colors.gray('exiting..'))
+          process.exit()
+          reject('web commander webserver not running!')
+        })
+      } else {
+        resolve(true)
+      }
     })
   }
   json(uri) {
     return (
-      fetch(this.genURI(uri))
+      this.check()
+      .then(o => fetch(this.genURI(uri)))
       .then(r => r.json())
     )
   }
   get(uri) {
     return (
-      fetch(this.genURI(uri))
+      this.check()
+      .then(o => fetch(this.genURI(uri)))
       .then(r => r.text())
     )
   }

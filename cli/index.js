@@ -14,13 +14,32 @@ const log = console.log
 
 program
   .version(fs.readJsonSync(path.resolve(__dirname, './../package.json')).version)
-  .command('info')
-  .alias('i')
-  .description('Info about the server') 
+
+program
+  .command('status')
+  .alias('S')
+  .description('Get the current status of the server') 
   .action((query, argv) => {
-    // get.json('/status')
-    // .then(data => log(data))
-    // .catch(err => log(err))
+    get.json('/status')
+    .then(data => {
+      if (data.status) { 
+        log(colors.green.bold('Server is up and running')) 
+      } else {
+        log(colors.red.bold('The server is not working'))
+      }
+    })
+    .catch(err => log(err))
+  })
+
+program
+  .command('add')
+  .alias('a')
+  .description('Add a service')
+  .action((q,a) => {
+    get.json('/status')
+    .then(d => {
+      
+    })
   })
 
 program.parse(process.argv)

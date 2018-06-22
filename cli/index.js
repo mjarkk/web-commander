@@ -9,6 +9,7 @@ const path = require('path')
 const fs = require('fs-extra')
 
 const get = require('./fetch.js')
+const Add = require('./add.js')
 
 const log = console.log
 
@@ -35,21 +36,6 @@ program
   .command('add')
   .alias('a')
   .description('Add a service')
-  .action((q,a) => {
-    get.json('/status')
-    .then(d => d.status
-      ? inquirer.prompt({
-          type: 'input',
-          name: 'serviceName',
-          message: 'The new app name? (max 20chars)\n>',
-          validate: output => output.length < 20
-        })
-      : Error('')
-    )
-    .then(ouput => {
-      log(ouput.serviceName)
-    })
-    .catch(err => log(err))
-  })
+  .action(Add)
 
 program.parse(process.argv)

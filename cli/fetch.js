@@ -1,3 +1,5 @@
+// A warpper around fetch to make it easier
+
 const fetch = require('node-fetch')
 const colors = require('colors')
 const log = console.log
@@ -8,7 +10,6 @@ const config = {
   host: 'localhost',
   protocol: 'http'
 }
-
 
 class FetchHandeler {
   constructor() {

@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node run.js",
     "dev": "node run.js --dev",
-    "build": "webpack --progress --display=minimal --config \"client/webpack.config.js\""
+    "build": "webpack --progress --display=minimal --config \"client/webpack.config.js\"",
+    "cleanup": "rm ./server/database/db.json"
   },
   "author": "mjarkk <mkopenga@gmail.com>",
   "license": "MIT",
@@ -30,6 +31,7 @@
     "express": "^4.16.3",
     "friendly-errors-webpack-plugin": "^1.7.0",
     "fs-extra": "^6.0.1",
+    "joi": "^13.4.0",
     "lowdb": "^1.0.0",
     "minimist": "^1.2.0",
     "node-fetch": "^2.1.2",

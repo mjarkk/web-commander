@@ -26,7 +26,7 @@ class Client {
     app.get('/addUser/', (req, res) => 
       checker.checkIncomming(req)
       .then(() => encryption.decrypt(req))
-      .then(() => db.addUser())
+      .then(data => db.addUser(data.username, data.password))
       .catch(err => this.sendErr({err}))
     )
   }

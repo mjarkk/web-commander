@@ -1,5 +1,6 @@
 // check the incomming content
 
+const Joi = require('joi')
 const fetch = require('node-fetch')
 const encryption = require('../shared/encryption.js')({
   fetch: fetch
@@ -11,13 +12,17 @@ class Check {
 
   }
   checkIncomming(req) {
-    return new Promise((resolve, reject) => {
-      if (req.body.data && req.body.username) {
+    return new Promise((resolve, reject, validate) => {
+      if (req && req.body && req.body.data && req.body.username) {
+        let user = db.user(req.body.username)
         resolve()
       } else {
         reject()
       }
     })
+  }
+  validate() {
+
   }
 }
 

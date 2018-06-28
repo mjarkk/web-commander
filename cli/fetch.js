@@ -1,7 +1,12 @@
-// A warpper around fetch to make it easier
+// A warpper around fetch
 
 const fetch = require('node-fetch')
 const colors = require('colors')
+const inquirer = require('inquirer')
+const encryption = require('../shared/encryption.js')({
+  fetch: fetch,
+  server: 'http://localhost'
+})
 const log = console.log
 
 require('dotenv').config()
@@ -34,6 +39,29 @@ class FetchHandeler {
       }
     })
   }
+  login(username, password) {
+    fetchHandeler.check().then(s => {
+      let next = (username, password) => encryption.login(username, password)
+      if (username && typeof password == 'string') {
+        next(username, password)
+      } else {
+        inquirer.prompt([
+          {
+            type: 'input',
+            name: 'username',
+            message: 'Username'
+          },{
+            type: 'password',
+            name: 'password',
+            message: 'Password'
+          }
+        ]).then(output => 
+          next(output.username, output.password)
+        )
+      }
+    })
+    .catch(() => {})
+  }
   json(uri) {
     return (
       this.check()
@@ -53,4 +81,6 @@ class FetchHandeler {
   }
 }
 
-module.exports = new FetchHandeler
+let fetchHandeler = new FetchHandeler
+
+module.exports = fetchHandeler

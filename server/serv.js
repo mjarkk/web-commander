@@ -1,6 +1,11 @@
 const log = console.log
 
+const fetch = require('node-fetch')
+const encryption = require('../shared/encryption.js')({
+  fetch: fetch
+})
 const db = require('./database/db.js')
+const checker = require('./check.js')
 
 class Client {
   constructor(app, conf) {
@@ -9,15 +14,21 @@ class Client {
     this.router(app)
   }
   router(app) {
-    app.get('/api/login/', (req, res) => {
+    app.get('/api/login/', (req, res) => 
       res.json({status: true})
-    })
-    app.get('/api/', (req, res) => {
+    )
+    app.get('/api/', (req, res) => 
       this.sendErr({res, why: 'want to find out how the api works?, go to the github repo: https://github.com/mjarkk/web-commander'})
-    })
-    app.get('/status/', (req, res) => {
+    )
+    app.get('/status/', (req, res) => 
       res.json({status: true})
-    })
+    )
+    app.get('/addUser/', (req, res) => 
+      checker.checkIncomming(req)
+      .then(() => encryption.decrypt(req))
+      .then(() => db.addUser())
+      .catch(err => this.sendErr({err}))
+    )
   }
   sendErr(data) {
     if (typeof data == 'object' && data.res) {

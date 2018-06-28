@@ -17,9 +17,6 @@ class AddProcess {
     )
     .then(ouput => {
       this.log(ouput.serviceName)
-      setTimeout(() => {
-        this.exit()
-      }, 2000)
     })
     .catch(err => log(err))
   }

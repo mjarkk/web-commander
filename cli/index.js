@@ -3,7 +3,6 @@
 // The CLI tool for the app
 
 const program = require('commander')
-const inquirer = require('inquirer')
 const colors = require('colors')
 const path = require('path')
 const fs = require('fs-extra')
@@ -38,4 +37,15 @@ program
   .description('Add a service')
   .action(Add)
 
+program
+  .command('login')
+  .alias('l')
+  .description('Check if you can login to the server')
+  .action(get.login)
+
 program.parse(process.argv)
+
+if (program.args.length == 0) {
+  log(`No argument passed, use \`${process.argv.join(' ')}\` to start the app`)
+  process.exit()
+}

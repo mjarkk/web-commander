@@ -1,11 +1,12 @@
 // A warpper around fetch
 
+require('dotenv').config()
 const fetch = require('node-fetch')
 const colors = require('colors')
 const inquirer = require('inquirer')
 const encryption = require('../shared/encryption.js')({
   fetch: fetch,
-  server: 'http://localhost'
+  server: 'http://localhost:' + process.env.Web_Server_Port
 })
 const log = console.log
 

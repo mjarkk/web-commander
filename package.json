@@ -1,7 +1,7 @@
 {
   "name": "web-commander",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "run.js",
   "repository": "https://github.com/mjarkk/web-commander",
   "bin": {
     "wcommander": "./cli/index.js",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node run.js",
-    "dev": "node run.js --dev",
+    "dev": "nodemon run.js -- --dev",
     "build": "webpack --progress --display=minimal --config \"client/webpack.config.js\"",
     "cleanup": "rm ./server/database/db.json"
   },
@@ -48,5 +48,18 @@
     "webpack-cli": "^3.0.4",
     "webpack-dev-middleware": "^3.1.3",
     "webpack-livereload-plugin": "^2.1.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      ".vscode/", 
+      "client/build/", 
+      "client/public/", 
+      "client/src/", 
+      "node_modules/",
+      "*/**/*.md",
+      "*/**/*.json",
+      "yarn.lock"
+    ],
+    "delay": "500"
   }
 }

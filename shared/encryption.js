@@ -7,9 +7,11 @@ const log = console.log
 class Encryption {
   constructor(inputs) {
     let un = undefined
+    let vm = this
 
     // init variables
-    ['key', 'setup', 'type', 'username'].map(el => this[el] = un)
+    let keys = ['key', 'setup', 'type', 'username']
+    keys.map(el => vm[el] = un)
     
     this.fetch = inputs.fetch
     this.server = typeof location != 'undefined' 
@@ -29,6 +31,37 @@ class Encryption {
       reject(new Error('check type is undefined'))
       return false
     }
+  }
+  genURI(uri) {
+    return `${this.server}${uri[0] == '/' ? uri : '/' + uri}`
+  }
+  genFetchObj(PostData, options) {
+    // ABOUT: generate options for a fetch
+    // ABOUT: this includeds settings the headers, credentials and encrpyting the object if needed
+    // PostData = {Object, string, number}
+    // options = {Object{key, NoEncryption}}
+    let NoEncryption = (typeof options == 'object' && options.NoEncryption) ? true : false
+    let key = (typeof options == 'object' && options.key) ? options.key : undefined
+    return new Promise((reslove, reject) => {
+      let send = data => reslove({
+        method: 'POST',
+        body: JSON.stringify({
+          data,
+          username: this.username
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      }) 
+      if (NoEncryption) {
+        send(PostData)
+      } else {
+        this.encrypt(PostData, key)
+          .then(send)
+          .catch(reject)
+      }
+    })
   }
   randomString(lenPowOf2) {
     // ABOUT: create a random string 
@@ -62,13 +95,9 @@ class Encryption {
   }
   encrpytSend(uri, data, key) {
     // ABOUT: encrpyt and send something to a url
-    return this.fetch(`${this.server}${uri[0] == '/' ? uri : '/' + uri}`, {
-      body: {
-        username: this.username,
-        data: this.encrypt(data, key)
-      }
-    })
-    .then(res => res.text())
+    return this.genFetchObj(data, {key})
+      .then(fetchObj => this.fetch(this.genURI(uri), fetchObj))
+      .then(res => res.text())
   }
   decrypt(data, key) {
     // data = encrypted string or express.js `req` object {string}
@@ -83,7 +112,20 @@ class Encryption {
     })
   } 
   login(username, password) {
-    // log(username, password)
+    // ABOUT: try to get the decryption key from the server
+    log(username, password)
+    return new Promise((resolve, reject) => 
+      (!this.fetch) 
+        ? reject(new Error('NO fetch nog defined in constructor'))
+        : this.genFetchObj({username: username}, {NoEncryption: true})
+          .then(fetchObj => this.fetch(this.genURI('/api/login/1'), fetchObj))
+          .then(res => res.text())
+          .then(data => {
+            log(data)
+            resolve(data)
+          })
+          .catch(reject)
+    )
   } 
   isLogedin() {
     // ABOUT: check if a user has been authenticated

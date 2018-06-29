@@ -3,7 +3,8 @@ const FileSync = require('lowdb/adapters/FileSync')
 const fs = require('fs-extra')
 const fetch = require('node-fetch')
 const encryption = require('../../shared/encryption.js')({
-  fetch: fetch
+  fetch,
+  server: 'http://localhost:' + process.env.Web_Server_Port
 })
 const path = require('path')
 
@@ -19,26 +20,30 @@ db.defaults({
 class Database {
   constructor() {
     if (this.users().length == 0) {
-      this.addUser('root', 'DefaultPassword', true, true)
-      .then(log)
-      .catch(log)
+      this.addUser('root', 'serverpass', true, true)
+      .then(() => {})
+      .catch(() => {})
     }
   }
   users() {
-    return db.get('users').value()
+    // ABOUT: return all users
+    return db.get('users').value()[0]
   }
   user(username) {
+    // ABOUT: get user info
     return db.get('users').find({username}).value()
   }
   appsList() {
-
+    // ABOUT: return apps list
+    return true
   }
   addApp() {
-    
+    // ABOUT: add a new app
+    return true
   }
   genUserInfo(password) {
     // ABOUT: generate the user security keys
-    let hash = encryption.hash(password,true)
+    let hash = encryption.hash(password, true)
     return ({
       password: hash.hash,
       salt: hash.salt,

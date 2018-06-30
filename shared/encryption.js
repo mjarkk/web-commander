@@ -113,13 +113,14 @@ class Encryption {
   } 
   login(username, password) {
     // ABOUT: try to get the decryption key from the server
+    // RETURN: promis(obj{username, key})
     log(username, password)
     return new Promise((resolve, reject) => 
       (!this.fetch) 
         ? reject(new Error('NO fetch nog defined in constructor'))
         : this.genFetchObj({username: username}, {NoEncryption: true})
           .then(fetchObj => this.fetch(this.genURI('/api/login/1'), fetchObj))
-          .then(res => res.text())
+          .then(res => res.json())
           .then(data => {
             log(data)
             resolve(data)

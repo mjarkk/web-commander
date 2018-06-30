@@ -46,6 +46,6 @@ program
 program.parse(process.argv)
 
 if (program.args.length == 0) {
-  log(`No argument passed, use \`${process.argv.join(' ')}\` to start the app`)
+  log(`No argument passed, use \`${process.argv.join(' ')} --help\` to get help`)
   process.exit()
 }

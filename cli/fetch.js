@@ -8,9 +8,8 @@ const encryption = require('../shared/encryption.js')({
   fetch: fetch,
   server: 'http://localhost:' + process.env.Web_Server_Port
 })
-const log = console.log
 
-require('dotenv').config()
+const log = console.log
 const config = {
   port: process.env.Web_Server_Port,
   host: 'localhost',

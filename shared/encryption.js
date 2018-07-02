@@ -33,7 +33,9 @@ class Encryption {
     }
   }
   genURI(uri) {
-    return `${this.server}${uri[0] == '/' ? uri : '/' + uri}`
+    return (typeof uri == 'string')
+      ? `${this.server}${uri[0] == '/' ? uri : '/' + uri}`
+      : this.server
   }
   genFetchObj(PostData, options) {
     // ABOUT: generate options for a fetch
@@ -87,6 +89,11 @@ class Encryption {
     // ABOUT: encrpyt something
     // data = data to encrpyt {string, number, object}
     // ?key = the decryption key (not required IF there is already set a static key) {object, string}
+    data = typeof data == 'object'
+      ? JSON.stringify(data)
+      : typeof data == 'number'
+        ? `${data}`
+        : data
     return new Promise((resolve, reject) => {
       if (this.check('key', key, reject)) {
         resolve(CryptoJS.AES.encrypt(data, this.key ? this.key : key).toString())
@@ -99,15 +106,29 @@ class Encryption {
       .then(fetchObj => this.fetch(this.genURI(uri), fetchObj))
       .then(res => res.text())
   }
+  ConvertToJson(str) {
+    try {
+      JSON.parse(str)
+    } catch (e) {
+      return str
+    }
+    return JSON.parse(str)
+  }
   decrypt(data, key) {
     // data = encrypted string or express.js `req` object {string}
     // ?key = the decryption key (not required IF if there is already set a static key) {object, string}
     return new Promise((resolve, reject) => {
       if (this.check('key', key, reject)) {
-        resolve(CryptoJS.AES.decrypt(
+        let output = CryptoJS.AES.decrypt(
           (data && data.body && data.body.data) ? data.body.data : data, 
           (this.key) ? this.key : key
-        ).toString(CryptoJS.enc.Utf8))
+        ).toString(CryptoJS.enc.Utf8)
+
+        resolve(
+          /^[0-9]{0,}$/.test(output)
+            ? Number(output)
+            : this.ConvertToJson(output)
+        )
       }
     })
   } 
@@ -132,10 +153,11 @@ class Encryption {
     // ABOUT: check if a user has been authenticated
     return !!this.key
   } 
-  setup(Domain) {
+  setup(data) {
     // ABOUT: For later use
-    if (Domain) {
-      this.Domain = Domain
+    if (typeof data == 'object') {
+      this.Domain = data.Domain | this.Domain
+      this.key = data.key | this.key
     }
   }
 }

@@ -11,7 +11,9 @@
     "start": "node run.js",
     "dev": "nodemon run.js -- --dev",
     "build": "webpack --progress --display=minimal --config \"client/webpack.config.js\"",
-    "cleanup": "rm ./server/database/db.json"
+    "cleanup": "rm ./server/database/db.json",
+    "test": "ava ./**/test/*.js ./**/tests/*.js",
+    "funtest": "ava ./**/test/*.js ./**/tests/*.js --tap | tap-nyan"
   },
   "author": "mjarkk <mkopenga@gmail.com>",
   "license": "MIT",
@@ -51,15 +53,18 @@
   },
   "nodemonConfig": {
     "ignore": [
-      ".vscode/", 
-      "client/build/", 
-      "client/public/", 
-      "client/src/", 
+      ".vscode/",
+      "client/build/",
+      "client/public/",
+      "client/src/",
       "node_modules/",
       "*/**/*.md",
       "*/**/*.json",
       "yarn.lock"
     ],
     "delay": "500"
+  },
+  "devDependencies": {
+    "ava": "1.0.0-beta.6"
   }
 }

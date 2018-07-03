@@ -33,6 +33,8 @@ class Encryption {
     }
   }
   genURI(uri) {
+    // uri = <string> 'some/route/123'
+    // RETURNS = 'http://localhost/some/route/123'
     return (typeof uri == 'string')
       ? `${this.server}${uri[0] == '/' ? uri : '/' + uri}`
       : this.server

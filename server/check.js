@@ -1,5 +1,6 @@
 // check the incomming content
 
+const log = require('../shared/log')
 const Joi = require('joi')
 const fetch = require('node-fetch')
 const encryption = require('../shared/encryption.js')({

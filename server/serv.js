@@ -1,20 +1,21 @@
-const log = console.log
-
+const log = require('../shared/log')
 const fetch = require('node-fetch')
-const encryption = require('../shared/encryption.js')({
+const encryption = require('../shared/encryption')({
   fetch: fetch,
   server: 'http://localhost:' + process.env.Web_Server_Port
 })
-const db = require('./database/db.js')
-const checker = require('./check.js')
-const ExpressHandeler = require('./expressHandeler.js')
+const db = require('./database/db')
+const checker = require('./check')
+const ExpressHandeler = require('./expressHandeler')
 
 class Client {
   constructor(app, conf) {
+
     this.app = app
     this.conf = conf
     this.EH = new ExpressHandeler(app)
     this.router(app)
+
   }
   router(app) {
     app.post('/api/login/:step', (req, res) => {
@@ -35,10 +36,10 @@ class Client {
         why: 'want to find out how the api works?, go to the github repo: https://github.com/mjarkk/web-commander'
       })
     )
-    app.get('/status/', (req, res) => 
+    app.get('/api/status/', (req, res) => 
       res._json({status: true})
     )
-    app.post('/addUser/', (req, res) => 
+    app.post('/api/addUser/', (req, res) => 
       checker.checkIncomming(
         req, 
         Joi => Joi.object().keys({

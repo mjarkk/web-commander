@@ -12,8 +12,8 @@
     "dev": "nodemon run.js -- --dev",
     "build": "webpack --progress --display=minimal --config \"client/webpack.config.js\"",
     "cleanup": "rm ./server/database/db.json",
-    "test": "ava ./**/test/*.js ./**/tests/*.js",
-    "funtest": "ava ./**/test/*.js ./**/tests/*.js --tap | tap-nyan"
+    "test": "ava */*/test/*.js */*/tests/*.js */test/*.js */tests/*.js",
+    "funtest": "yarn test --tap | tap-nyan"
   },
   "author": "mjarkk <mkopenga@gmail.com>",
   "license": "MIT",

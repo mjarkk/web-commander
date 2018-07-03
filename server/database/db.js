@@ -10,7 +10,7 @@ const path = require('path')
 
 const adapter = new FileSync(path.resolve(__dirname, 'db.json'))
 const db = low(adapter)
-const log = console.log
+const log = require('../../shared/log')
 
 db.defaults({
   apps: [], 
@@ -27,7 +27,7 @@ class Database {
   }
   users() {
     // ABOUT: return all users
-    return db.get('users').value()[0]
+    return db.get('users').value()
   }
   user(username) {
     // ABOUT: get user info

@@ -1,7 +1,33 @@
-// a express.js wrapper for testing
-// useing this wrapper you don't have to use anny port on the pc for testing
-// becuase everything is code based (no network request) means this is much faster than a express
-// and makes the testing code much cleaner
+/*
+
+a fake express.js "server" for testing
+this server transfroms the app.get, app.use and app.post into functions to exsecute withoud making network requests
+what will result in mutch faster tests because the testing code doesn't have to wait for network request
+aside from that this code is also more clean and easier to debug
+
+usage:
+
+// import this file
+import exp from ./express.js
+
+// create a fake express app object
+const app = exp.app()
+
+// example route
+app.get('/status', (req, res) => {
+  res.json({status: true})
+})
+
+// to send a fake request to the route above
+exp.newReq('/status', (data, err) => {
+  
+  console.log(data, err)
+  // err = <undefined> undefined
+  // data = <object> {status: true}
+
+}, {type: 'get'})
+
+*/
 
 let app = {
   get(route, cb) {
@@ -28,7 +54,7 @@ module.exports = {
         body: <object> post data
       }
       cb = function(data, err)
-      path = 
+      path = request path et: /api/status
     */
     let req = {
       originalUrl: path 

@@ -130,3 +130,17 @@ testDataList.map((testData, index) => {
 		})
 	})
 })
+
+test('Random string works', t => {
+	t.plan(3)
+	let rand = l => enc.randomString(l)
+	t.is(rand(10).length, 2048, 'Random string has lenght of 10**2 = 256')
+	t.is(rand().length, 256, 'Default random string lenght is 256')
+	t.not(rand(), rand(), 'A random string can\'t be 2 times the same')
+})
+
+test('Random string blocks to big of a input value', t => {
+	t.plan(2)
+	t.is(typeof enc.randomString(16), 'object', 'A random string with input 21 sould give an error')
+	t.is(typeof enc.randomString(15), 'string', 'The max input for `randomString` sould give a string')
+})

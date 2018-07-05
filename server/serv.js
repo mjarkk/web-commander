@@ -23,10 +23,22 @@ class Client {
         this.EH.sendErr({err: 'Post data wrong', res})
       } else {
         let user = db.user(req.body.data.username)
-        if (req.params.step == 1) {
-          res._json(user)
+        if (user) {
+          if (req.params.step == 1) {
+            encryption.encrypt(user.key, user.password)
+            .then(data => {
+              res._json({
+                status: true,
+                getkey: data,
+                salt: user.salt
+              })
+            })
+            .catch(() => res.EH.sendErr({res}))
+          } else {
+            res._json({status: true})
+          }
         } else {
-          res._json(user)
+          this.EH.sendErr({res, why: 'user not found'})
         }
       }
     })

@@ -39,25 +39,38 @@ class Encryption {
       ? `${this.server}${uri[0] == '/' ? uri : '/' + uri}`
       : this.server
   }
-  genFetchObj(PostData, options) {
+  genFetchObj(PostData, options, uri) {
     // ABOUT: generate options for a fetch
     // ABOUT: this includeds settings the headers, credentials and encrpyting the object if needed
     // PostData = {Object, string, number}
     // options = {Object{key, NoEncryption}}
-    let NoEncryption = (typeof options == 'object' && options.NoEncryption) ? true : false
-    let key = (typeof options == 'object' && options.key) ? options.key : undefined
-    return new Promise((reslove, reject) => {
-      let send = data => reslove({
-        method: 'POST',
-        body: JSON.stringify({
-          data,
-          username: this.username
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin'
-      }) 
+    // uri = url where to fetch to
+    return new Promise((resolve, reject) => {
+      if (typeof options == 'string') {
+        uri = options
+      }
+      let NoEncryption = (typeof options == 'object' && options.NoEncryption) ? true : false
+      let key = (typeof options == 'object' && options.key) ? options.key : undefined
+      let send = data => {
+        let toSend = {
+          method: 'POST',
+          body: JSON.stringify({
+            data,
+            username: this.username
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin'
+        }
+        if (uri) {
+          this.fetch(uri, toSend)
+          .then(resolve)
+          .catch(reject)
+        } else {
+          resolve(toSend)
+        }
+      }
       if (NoEncryption) {
         send(PostData)
       } else {
@@ -70,7 +83,12 @@ class Encryption {
   randomString(lenPowOf2) {
     // ABOUT: create a random string 
     // ABOUT: the lenght of the string is 2 to the power of `len`
-    return CryptoJS.lib.WordArray.random(typeof len == 'number' ? Math.pow(2, lenPowOf2) : 128).toString()
+    if (lenPowOf2 > 15) {
+      // don't allow strings bigger than 20 because the browser / nodejs might crash
+      return new Error('String can\'t be more than 20')
+    }
+    let lenght = typeof lenPowOf2 == 'number' ? Math.pow(2, lenPowOf2) : 128
+    return CryptoJS.lib.WordArray.random(lenght).toString()
   }
   hash(data, salt) {
     // ABOUT: hash a string
@@ -104,8 +122,8 @@ class Encryption {
   }
   encrpytSend(uri, data, key) {
     // ABOUT: encrpyt and send something to a url
-    return this.genFetchObj(data, {key})
-      .then(fetchObj => this.fetch(this.genURI(uri), fetchObj))
+    return 
+      this.genFetchObj(data, {key}, this.genURI(uri))
       .then(res => res.text())
   }
   ConvertToJson(str) {
@@ -137,16 +155,19 @@ class Encryption {
   login(username, password) {
     // ABOUT: try to get the decryption key from the server
     // RETURN: promis(obj{username, key})
-    log(username, password)
     return new Promise((resolve, reject) => 
       (!this.fetch) 
         ? reject(new Error('NO fetch nog defined in constructor'))
-        : this.genFetchObj({username: username}, {NoEncryption: true})
-          .then(fetchObj => this.fetch(this.genURI('/api/login/1'), fetchObj))
+        : this.genFetchObj({username: username}, {NoEncryption: true}, this.genURI('/api/login/1'))
           .then(res => res.json())
-          .then(data => {
-            log(data)
-            resolve(data)
+          .then(data => 
+            data.status
+              ? this.decrypt(data.getkey, this.hash(password, data.salt).hash)
+              : reject('Username does not exsist')
+          )
+          .then(key => {
+            return this.randomString(12)
+            reslove(true)
           })
           .catch(reject)
     )

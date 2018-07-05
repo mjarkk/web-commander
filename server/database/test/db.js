@@ -11,11 +11,11 @@ test('Users returns array', t => {
 
 test('genUserInfo works', t => {
   t.plan(6)
-  let outData = db.genUserInfo('testPass')
-  t.truthy(!!outData.key)
-  t.truthy(!!outData.password)
-  t.truthy(!!outData.salt)
-  t.snapshot(outData.key.length)
-  t.snapshot(outData.password.length)
-  t.snapshot(outData.salt.length)
+  let out = db.genUserInfo('testPass')
+  t.truthy(!!out.key)
+  t.truthy(!!out.password)
+  t.truthy(!!out.salt)
+  t.snapshot(out.key.length)
+  t.snapshot(out.password.length)
+  t.snapshot(out.salt.length)
 })

@@ -38,6 +38,7 @@
     "minimist": "^1.2.0",
     "node-fetch": "^2.1.2",
     "ora": "^2.1.0",
+    "randomstring": "^1.1.5",
     "sjcl": "^1.0.7",
     "style-loader": "^0.21.0",
     "stylus": "^0.54.5",

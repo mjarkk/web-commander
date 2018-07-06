@@ -1,10 +1,10 @@
 import test from 'ava'
 import encrpytion from '../encryption'
-import fetch from 'node-fetch'
+import networkHandeler from '../fetch'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const log = console.log
+const fetch = networkHandeler.fetch
 const enc = encrpytion({fetch, server: 'http://localhost:' + process.env.Web_Server_Port})
 
 test('Encrpytion is a valid class', t => {
@@ -79,6 +79,22 @@ test.cb('genFetchObj works #5 (using `test` as key and string as post data)', t 
 		t.end()
 	})
 	.catch(err => {
+		t.fail(err)
+		t.end()
+	})
+})
+
+test.cb('genFetchObj works #6 (passing a uri to fetch)', t => {
+	let testVal = {outputVal: 'some text'}
+	let uri = networkHandeler.bind(testVal).uri()
+	enc.genFetchObj('idk', {NoEncryption: true}, uri)
+	.then(data => {
+		t.truthy(data)
+		t.is(typeof data, 'object')
+		t.is(JSON.stringify(data), JSON.stringify(testVal))
+		t.end()
+	})
+	.then(err => {
 		t.fail(err)
 		t.end()
 	})

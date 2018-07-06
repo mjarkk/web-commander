@@ -43,20 +43,28 @@ class Encryption {
     // ABOUT: generate options for a fetch
     // ABOUT: this includeds settings the headers, credentials and encrpyting the object if needed
     // PostData = {Object, string, number}
-    // options = {Object{key, NoEncryption}}
+    // options = {Object{
+    //    key, = key to decrypt
+    //    NoEncryption, = don't encrpyt the fetch
+    //    NormalFetch, = do not automaticly detect if the fetch output if text or json
+    //    usePostUsername, = use the username from the PostData as default username 
+    // }}
     // uri = url where to fetch to
     return new Promise((resolve, reject) => {
       if (typeof options == 'string') {
         uri = options
       }
-      let NoEncryption = (typeof options == 'object' && options.NoEncryption) ? true : false
-      let key = (typeof options == 'object' && options.key) ? options.key : undefined
+      let optionsTrue = typeof options == 'object'
+      let NoEncryption = (optionsTrue && options.NoEncryption) ? true : false
+      let key = (optionsTrue && options.key) ? options.key : undefined
       let send = data => {
         let toSend = {
           method: 'POST',
           body: JSON.stringify({
             data,
-            username: this.username
+            username: (optionsTrue && options.usePostUsername && typeof PostData == 'object' && PostData.username) 
+              ? PostData.username 
+              : this.username
           }),
           headers: {
             'Content-Type': 'application/json'
@@ -65,6 +73,18 @@ class Encryption {
         }
         if (uri) {
           this.fetch(uri, toSend)
+          .then(res => {
+            if (optionsTrue && options.NormalFetch) {
+              resolve(res)
+            } else {
+              return res.text()
+            }
+          })
+          .then(data => {
+            return new Promise(reslove => {
+              reslove(this.ConvertToJson(data))
+            })
+          })
           .then(resolve)
           .catch(reject)
         } else {
@@ -87,7 +107,7 @@ class Encryption {
       // don't allow strings bigger than 20 because the browser / nodejs might crash
       return new Error('String can\'t be more than 20')
     }
-    let lenght = typeof lenPowOf2 == 'number' ? Math.pow(2, lenPowOf2) : 128
+    let lenght = typeof lenPowOf2 == 'number' ? Math.pow(2, lenPowOf2) : 128 
     return CryptoJS.lib.WordArray.random(lenght).toString()
   }
   hash(data, salt) {
@@ -100,10 +120,7 @@ class Encryption {
         ? this.randomString(7) 
         : ''
     let hash = CryptoJS.PBKDF2(data, salt, {keySize: 128, iterations: 200}).toString()
-    return ({
-      hash,
-      salt
-    })
+    return ({ hash, salt })
   }
   encrypt(data, key) {
     // ABOUT: encrpyt something
@@ -112,7 +129,7 @@ class Encryption {
     data = typeof data == 'object'
       ? JSON.stringify(data)
       : typeof data == 'number'
-        ? `${data}`
+        ? '' + data
         : data
     return new Promise((resolve, reject) => {
       if (this.check('key', key, reject)) {
@@ -122,9 +139,7 @@ class Encryption {
   }
   encrpytSend(uri, data, key) {
     // ABOUT: encrpyt and send something to a url
-    return 
-      this.genFetchObj(data, {key}, this.genURI(uri))
-      .then(res => res.text())
+    return this.genFetchObj(data, {key}, this.genURI(uri))
   }
   ConvertToJson(str) {
     try {
@@ -141,9 +156,8 @@ class Encryption {
       if (this.check('key', key, reject)) {
         let output = CryptoJS.AES.decrypt(
           (data && data.body && data.body.data) ? data.body.data : data, 
-          (this.key) ? this.key : key
+          this.key ? this.key : key
         ).toString(CryptoJS.enc.Utf8)
-
         resolve(
           /^[0-9]{0,}$/.test(output)
             ? Number(output)
@@ -158,18 +172,24 @@ class Encryption {
     return new Promise((resolve, reject) => 
       (!this.fetch) 
         ? reject(new Error('NO fetch nog defined in constructor'))
-        : this.genFetchObj({username: username}, {NoEncryption: true}, this.genURI('/api/login/1'))
-          .then(res => res.json())
+        : this.genFetchObj({username}, {NoEncryption: true, usePostUsername: true}, this.genURI('/api/login/1'))
           .then(data => 
             data.status
               ? this.decrypt(data.getkey, this.hash(password, data.salt).hash)
               : reject('Username does not exsist')
           )
-          .then(key => {
-            return this.randomString(12)
-            reslove(true)
+          .then(key =>
+            this.genFetchObj(
+              {tryKey: this.randomString(5), username: username}, 
+              {key, usePostUsername: true}, 
+              this.genURI('/api/login/2')
+            )
+          )
+          .then(data => log('data:',data))
+          .catch(err => {
+            log('got error:',err)
+            reject(err)
           })
-          .catch(reject)
     )
   } 
   isLogedin() {

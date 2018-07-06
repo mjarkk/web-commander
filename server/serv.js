@@ -14,13 +14,14 @@ class Client {
     this.app = app
     this.conf = conf
     this.EH = new ExpressHandeler(app)
+    this.sendErr = this.EH.sendErr
     this.router(app)
 
   }
   router(app) {
     app.post('/api/login/:step', (req, res) => {
-      if (typeof req.body.data.username != 'string') {
-        this.EH.sendErr({err: 'Post data wrong', res})
+      if ((req.params.step == 1 && typeof req.body.data.username != 'string') || (req.params.step == 2 && typeof req.body.username != 'string')) {
+        this.sendErr({err: 'Post data wrong', res})
       } else {
         let user = db.user(req.body.data.username)
         if (user) {
@@ -38,14 +39,14 @@ class Client {
             res._json({status: true})
           }
         } else {
-          this.EH.sendErr({res, why: 'user not found'})
+          
+          this.sendErr({res, why: 'user not found'})
         }
       }
     })
     app.get('/api/', (req, res) => 
-      this.EH.sendErr({
-        res, 
-        why: 'want to find out how the api works?, go to the github repo: https://github.com/mjarkk/web-commander'
+      this.sendErr({
+        res, why: 'want to find out how the api works?, go to the github repo: https://github.com/mjarkk/web-commander'
       })
     )
     app.get('/api/status/', (req, res) => 
@@ -61,7 +62,7 @@ class Client {
       )
       .then(() => encryption.decrypt(req))
       .then(data => db.addUser(data.username, data.password))
-      .catch(err => this.EH.sendErr({err, res}))
+      .catch(err => this.sendErr({err, res}))
     )
   }
 }

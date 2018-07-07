@@ -8,6 +8,7 @@ const db = require('./database/db')
 const checker = require('./check')
 const ExpressHandeler = require('./expressHandeler')
 
+
 class Client {
   constructor(app, conf) {
 
@@ -19,33 +20,13 @@ class Client {
 
   }
   router(app) {
-    app.post('/api/login/:step', (req, res) => {
-      if ((req.params.step == 1 && typeof req.body.data.username != 'string') || (req.params.step == 2 && typeof req.body.username != 'string')) {
-        this.sendErr({err: 'Post data wrong', res})
-      } else {
-        let user = db.user(req.body.data.username)
-        if (user) {
-          if (req.params.step == 1) {
-            encryption.encrypt(user.key, user.password)
-            .then(data => {
-              res._json({
-                status: true,
-                getkey: data,
-                salt: user.salt
-              })
-            })
-            .catch(() => res.EH.sendErr({res}))
-          } else {
-            res._json({status: true})
-          }
-        } else {
-          
-          this.sendErr({res, why: 'user not found'})
-        }
-      }
-    })
+    let vm = this
+    
+    // required routes
+    require('./routes/login')(vm)
+    
     app.get('/api/', (req, res) => 
-      this.sendErr({
+      vm.sendErr({
         res, why: 'want to find out how the api works?, go to the github repo: https://github.com/mjarkk/web-commander'
       })
     )
@@ -62,7 +43,7 @@ class Client {
       )
       .then(() => encryption.decrypt(req))
       .then(data => db.addUser(data.username, data.password))
-      .catch(err => this.sendErr({err, res}))
+      .catch(err => vm.sendErr({err, res}))
     )
   }
 }

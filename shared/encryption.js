@@ -55,7 +55,7 @@ class Encryption {
         uri = options
       }
       let optionsTrue = typeof options == 'object'
-      let NoEncryption = (optionsTrue && options.NoEncryption) ? true : false
+      let NoEncryption = (optionsTrue && options.NoEncryption)
       let key = (optionsTrue && options.key) ? options.key : undefined
       let send = data => {
         let toSend = {
@@ -84,6 +84,13 @@ class Encryption {
             return new Promise(reslove => {
               reslove(this.ConvertToJson(data))
             })
+          })
+          .then(data => {
+            if (optionsTrue && options.key && typeof data == 'object' && typeof data.data == 'string' && /^(\/|\+|[a-zA-Z0-9]){0,}$/.test(data.data)) {
+              return this.decrypt(data.data, (optionsTrue) ? options.key : undefined)
+            } else {
+              resolve(data)
+            }
           })
           .then(resolve)
           .catch(reject)
@@ -165,29 +172,41 @@ class Encryption {
         )
       }
     })
-  } 
+  }
   login(username, password) {
     // ABOUT: try to get the decryption key from the server
     // RETURN: promis(obj{username, key})
+    let tryKey = ''
+    let testString = this.randomString(5)
     return new Promise((resolve, reject) => 
       (!this.fetch) 
-        ? reject(new Error('NO fetch nog defined in constructor'))
+        ? reject(new Error('NO fetch not defined in constructor'))
         : this.genFetchObj({username}, {NoEncryption: true, usePostUsername: true}, this.genURI('/api/login/1'))
-          .then(data => 
+          .then(data =>
             data.status
               ? this.decrypt(data.getkey, this.hash(password, data.salt).hash)
-              : reject('Username does not exsist')
+              : reject(new Error('Username does not exsist'))
           )
-          .then(key =>
-            this.genFetchObj(
-              {tryKey: this.randomString(5), username: username}, 
+          .then(key => {
+            // test if the key works
+            tryKey = key
+            return this.genFetchObj(
+              {tryKey: testString, username}, 
               {key, usePostUsername: true}, 
               this.genURI('/api/login/2')
             )
-          )
-          .then(data => log('data:',data))
+          })
+          .then(data => {
+            if (data == testString) {
+              // set the key to the class and reslove
+              this.key = tryKey
+              resolve(tryKey)
+            } else {
+              // data from test fetch dinn't match so key is wrong
+              reject(new Error('Password incorect'))
+            }
+          })
           .catch(err => {
-            log('got error:',err)
             reject(err)
           })
     )

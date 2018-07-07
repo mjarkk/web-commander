@@ -7,6 +7,9 @@ class ExpressHandeler {
   constructor(app) {
     // app = express app
     app.use((req, res, next) => {
+      res['trueJson'] = data => res._json({status: true, data})
+      res['TrueJson'] = res.trueJson
+      res['truejson'] = res.trueJson
       res['_json'] = JsonData => {
         if (typeof JsonData == 'object' && (JsonData['password'] || JsonData['key'])) {
           log(`\nFound ${ JsonData['password'] ? JsonData['key'] ? 'password and key' :'password' : 'key' } in data to send back`.red.bold)
@@ -15,6 +18,7 @@ class ExpressHandeler {
         }
         res.json(JsonData)
       }
+      res['_Json'] = res._json
       next()
     })
   }

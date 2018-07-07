@@ -1,5 +1,5 @@
 import test from 'ava'
-import exp from '../../shared/express'
+import exp from '../../shared/helpers/express'
 import Serv from '../serv'
 
 // log(`\n\n${JSON.stringify(data)}\n\n`)

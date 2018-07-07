@@ -41,7 +41,7 @@ program
   .command('login')
   .alias('l')
   .description('Check if you can login to the server')
-  .action(get.login)
+  .action(() => get.login('root', 'serverpass'))
 
 program.parse(process.argv)
 

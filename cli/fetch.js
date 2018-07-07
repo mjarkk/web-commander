@@ -42,7 +42,7 @@ class FetchHandeler {
   login(username, password) {
     fetchHandeler.check().then(s => {
       let next = (username, password) => encryption.login(username, password)
-      if (username && typeof password == 'string') {
+      if (typeof username == 'string' && typeof password == 'string') {
         next(username, password)
       } else {
         inquirer.prompt([

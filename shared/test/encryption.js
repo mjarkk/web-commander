@@ -1,6 +1,6 @@
 import test from 'ava'
 import encrpytion from '../encryption'
-import networkHandeler from '../fetch'
+import networkHandeler from '../helpers/fetch'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -86,8 +86,7 @@ test.cb('genFetchObj works #5 (using `test` as key and string as post data)', t 
 
 test.cb('genFetchObj works #6 (passing a uri to fetch)', t => {
 	let testVal = {outputVal: 'some text'}
-	let uri = networkHandeler.bind(testVal).uri()
-	enc.genFetchObj('idk', {NoEncryption: true}, uri)
+	enc.genFetchObj('idk', {NoEncryption: true}, networkHandeler.bind(testVal).uri())
 	.then(data => {
 		t.truthy(data)
 		t.is(typeof data, 'object')

@@ -13,22 +13,46 @@ class Check {
   constructor() {
 
   }
-  checkIncomming(req, validate) {
-    return new Promise((resolve, reject) => {
-      if (req && req.body && req.body.data && req.body.username) {
-        let next = () => {
-          let user = db.user(req.body.username)
+  async checkIncomming(req, validate) {
+    let checks = [
+      (resolve, reject) => {
+        // check if there is post data
+        if (
+          typeof req == 'object' 
+          && typeof req.body == 'object' 
+          && typeof req.body.data == 'string' 
+          && typeof req.body.username == 'string'
+        ) {
+          resolve()
+        } else {
+          reject('post data wrong')
+        }
+      },
+      (resolve, reject) => {
+        // try to decrypt the data from the post object
+        let user = db.user(req.body.username)
+        if (user) {
+          encryption.decrypt(req.body.data, user.key)
+          .then(data => {
+            req.body.data = data
+            req['user'] = user 
+            resolve()
+          })
+          .catch(reject)
+        } else {
+          reject('post data wrong, username doesn\'t exsist')
+        }
+      },
+      (resolve, reject) => {
+        // check if the included data is right
+        if (typeof validate == 'function') {
+          Joi.validate(req.body.data, validate(), err => err ? reject(new Error('Input data not validated')) : resolve())
+        } else {
           resolve()
         }
-        if (typeof validate == 'function') {
-          Joi.validate(req.body.data, validate(), err => err ? reject(new Error('Input data not validated')) : next())
-        } else {
-          next()
-        }
-      } else {
-        reject()
       }
-    })
+    ]
+    return await checks.map(async (check, id) => await new Promise(check))
   }
 }
 

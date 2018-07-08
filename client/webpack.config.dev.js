@@ -1,7 +1,6 @@
-const path = require('path')
 const webpack = require('webpack')
+const path = require('path')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
-const { VueLoaderPlugin } = require('vue-loader')
 const LiveReloadPlugin = require('webpack-livereload-plugin')
 
 let production = false
@@ -33,17 +32,18 @@ module.exports = {
       {
         test: /\.styl$/, 
         loader: 'style-loader!css-loader!stylus-loader' 
-      },{
-        test: /\.vue$/,
-        use: 'vue-loader'
       }
     ]
   },
   plugins: [
-    new VueLoaderPlugin(),
     new FriendlyErrorsWebpackPlugin(),
     new LiveReloadPlugin({})
   ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  },
   devtool: (production) ? 'none' : 'source-map',
   mode: (production) ? 'production' : 'development',
   watch: !production

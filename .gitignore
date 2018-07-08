@@ -64,3 +64,4 @@ typings/
 client/build/js/*
 server/database/db.json
 .key
+package-lock.json

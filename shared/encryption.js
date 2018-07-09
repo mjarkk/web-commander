@@ -1,6 +1,8 @@
 // This shared module contains all the things to encrypt and decrypt data
 
-const CryptoJS = require('crypto-js')
+import crypto from 'crypto-js'
+
+const { lib, PBKDF2, AES, enc } = crypto 
 
 const log = console.log
 
@@ -115,7 +117,7 @@ class Encryption {
       return new Error('String can\'t be more than 20')
     }
     let lenght = typeof lenPowOf2 == 'number' ? Math.pow(2, lenPowOf2) : 128 
-    return CryptoJS.lib.WordArray.random(lenght).toString()
+    return lib.WordArray.random(lenght).toString()
   }
   hash(data, salt) {
     // ABOUT: hash a string
@@ -126,7 +128,7 @@ class Encryption {
       : salt === true 
         ? this.randomString(7) 
         : ''
-    let hash = CryptoJS.PBKDF2(data, salt, {keySize: 128, iterations: 200}).toString()
+    let hash = PBKDF2(data, salt, {keySize: 128, iterations: 200}).toString()
     return ({ hash, salt })
   }
   encrypt(data, key) {
@@ -140,7 +142,7 @@ class Encryption {
         : data
     return new Promise((resolve, reject) => {
       if (this.check('key', key, reject)) {
-        resolve(CryptoJS.AES.encrypt(data, this.key ? this.key : key).toString())
+        resolve(AES.encrypt(data, this.key ? this.key : key).toString())
       }
     })
   }
@@ -161,10 +163,10 @@ class Encryption {
     // ?key = the decryption key (not required IF if there is already set a static key) {object, string}
     return new Promise((resolve, reject) => {
       if (this.check('key', key, reject)) {
-        let output = CryptoJS.AES.decrypt(
+        let output = AES.decrypt(
           (data && data.body && data.body.data) ? data.body.data : data, 
           this.key ? this.key : key
-        ).toString(CryptoJS.enc.Utf8)
+        ).toString(enc.Utf8)
         resolve(
           /^[0-9]{0,}$/.test(output)
             ? Number(output)

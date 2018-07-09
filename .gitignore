@@ -62,6 +62,7 @@ typings/
 
 # Added myself
 client/build/js/*
+client/build/index.html
 server/database/db.json
 .key
 package-lock.json

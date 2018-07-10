@@ -4,8 +4,6 @@ import crypto from 'crypto-js'
 
 const { lib, PBKDF2, AES, enc } = crypto 
 
-const log = console.log
-
 class Encryption {
   constructor(inputs) {
     let un = undefined

@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
+const compression = require('compression')
 const argv = require('minimist')(process.argv)
 
 const imports = {
@@ -15,6 +16,7 @@ const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(compression())
 
 if (argv.dev) {
   const webpack = require('webpack')

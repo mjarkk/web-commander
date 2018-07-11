@@ -3,15 +3,11 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 class Test extends React.Component {
-  constructor(props) {
-    super()
-    this.state = props
-  }
   add() {
-    this.props.dispatch({type: 'add'})
+    this.props.dispatch({type: 'TODO-add'})
   }
   remove() {
-    this.props.dispatch({type: 'remove'})
+    this.props.dispatch({type: 'TODO-remove'})
   }
   render() {
     return (
@@ -26,4 +22,4 @@ class Test extends React.Component {
   }
 }
 
-export default connect(props => ({num: props.num}))(Test)
+export default connect(props => props.todo)(Test)

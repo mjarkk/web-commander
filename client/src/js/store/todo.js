@@ -1,3 +1,5 @@
+// This is a test file, wil later be removed.
+
 export default (state = {num: 1}, action) => {
   switch (action.type) {
     case 'TODO-add':

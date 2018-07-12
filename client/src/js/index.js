@@ -5,7 +5,8 @@ import {Provider} from 'react-redux'
 
 // Custom Imports
 import './../style/style.styl'
-import Test from './components/test'
+import Todo from './components/todo'
+import Login from './components/login'
 import store from './store/index'
 
 class Base extends React.Component {
@@ -14,11 +15,12 @@ class Base extends React.Component {
   }
   render() {
     return (
-      <div className="base">
-        <Provider store={store}>
-          <Test />
-        </Provider>
-      </div>
+      <Provider store={store}>
+        <div className="base">
+          <Login />
+          <Todo />
+        </div>
+      </Provider>
     )
   }
 }

@@ -1,3 +1,4 @@
+// This is a test file, wil later be removed.
 
 import React from 'react'
 import {connect} from 'react-redux'

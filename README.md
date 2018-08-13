@@ -1,5 +1,5 @@
 # Web commander
-*Become the commander over your server's programs*  
+Stoped working on this project for now maybe i come back later to this project
   
 ## Setup
 ```bash
